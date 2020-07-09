@@ -27,7 +27,6 @@ cd facerec-cpp
 
 
 # Photo Inference examples (<app_binary> <path_to_mtcnn_models_dir> <path_to_test_image> <path_to_facerecognition_model_dir> <path_to_hdf5_dataset>):
-
 ./build/infer_photo ./models ./data/got.jpg ./data/IR_50_MODEL_arcface_ms1celeb_epoch90_lfw9962_traced_model.pt ./data/dataset_targarien.h5
 ./build/infer_photo ./models ./data/test1.jpg ./data/IR_50_MODEL_arcface_ms1celeb_epoch90_lfw9962_traced_model.pt ./data/dataset_targarien.h5
 ./build/infer_photo ./models ./data/test4.jpg ./data/IR_50_MODEL_arcface_ms1celeb_epoch90_lfw9962_traced_model.pt ./data/dataset_targarien.h5
