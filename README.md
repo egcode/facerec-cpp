@@ -1,8 +1,7 @@
 # Facerec-cpp
 
-C++ inference implementation of [this repo](https://github.com/egcode/facerec) 
-This repo able to use `hdf5` and `torch model` files that generated with [this repo](https://github.com/egcode/facerec).
-
+C++ inference implementation of [this repo](https://github.com/egcode/facerec). 
+ `hdf5` and `torch model` files also fully compatible.
 
 
 ## Build 
