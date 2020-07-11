@@ -1,7 +1,7 @@
 # Facerec-cpp
 
 C++ inference implementation of [this repo](https://github.com/egcode/facerec). 
- `hdf5` and `torch model` files also fully compatible. Model needs to be [traced](https://github.com/egcode/facerec/blob/master/trace_model.py) first
+ `hdf5` and `torch model` files also fully compatible. Model needs to be [traced](https://github.com/egcode/facerec/blob/master/trace_model.py) first.
 
 
 ## Build 
