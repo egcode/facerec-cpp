@@ -143,8 +143,6 @@ int main(int argc, char **argv)
             }
             std::cout << "Number of faces found in the supplied image - " << faces.size() << std::endl;
 
-            bool showChange = false;
-
             // Face Recognition
             for (size_t i = 0; i < faces.size(); ++i) 
             {
@@ -152,16 +150,11 @@ int main(int argc, char **argv)
                 if ((faces[i].bbox.x1 > 0) && (faces[i].bbox.x2 < captureWidth) && (faces[i].bbox.y1 > 0) && (faces[i].bbox.y2 < captureHeight)) {
                     cv::Mat faceImage = cropFaceImage(faces[i], frame);
                     faces[i].recognitionTensor = torchFaceRecognitionInference(module, faceImage);
-                    showChange = true;
                 } else {
                     std::cout << "Face Out of Bounds - " << std::endl;
-                    faces[i].recognitionTensor = torch::empty({1, 512});
                 }
                 
             }
-
-            std::cout << "---showChange - " << showChange << std::endl;
-            std::cout << "---numFaces - " << faces.size() << std::endl;
 
             faces = readHDF5AndGetLabels(file, faces);
             
