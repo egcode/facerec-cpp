@@ -47,15 +47,23 @@ double distanceCosine(at::Tensor tensor1, at::Tensor tensor2)
 
 cv::Mat cropFaceImage(Face face, cv::Mat img) 
 {
-    cv::Rect rectSquare = face.bbox.getSquare().getRect(); // Make Square
-    // std::cout << "rect square: " << rectSquare << std::endl;
-    // std::cout << "x: " << rectSquare.x << std::endl;
-    // std::cout << "y: " << rectSquare.y << std::endl;
-    // std::cout << "width: " << rectSquare.width << std::endl;
-    // std::cout << "height: " << rectSquare.height << std::endl;
 
-    // auto rect = faces[i].bbox.getRect(); 
-    // std::cout << "rect: " << rect << std::endl;
+    std::cout << "Img Size: " << img.size() << std::endl;
+
+    std::cout << "Before x1: " << face.bbox.x1 << std::endl;
+    std::cout << "Before x2: " << face.bbox.x2 << std::endl;
+    std::cout << "Before y1: " << face.bbox.y1 << std::endl;
+    std::cout << "Before y2: " << face.bbox.y2 << std::endl;
+
+// cv::Rect rectSquare = face.bbox.getSquare().getRect(); // Make Square 
+    cv::Rect rectSquare = face.bbox.getRect();
+    std::cout << "rect square: " << rectSquare << std::endl;
+
+    std::cout << "After x1: " << rectSquare.x << std::endl;
+    std::cout << "After x2: " << rectSquare.x + rectSquare.width << std::endl;
+    std::cout << "After y1: " << rectSquare.y << std::endl;
+    std::cout << "After y2: " << rectSquare.y + rectSquare.width << std::endl;
+    std::cout << "\n\n" << rectSquare.height << std::endl;
 
   
     // Crop the full image to that image contained by the rectangle myROI
