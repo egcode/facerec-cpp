@@ -155,6 +155,7 @@ int main(int argc, char **argv)
                     showChange = true;
                 } else {
                     std::cout << "Face Out of Bounds - " << std::endl;
+                    faces[i].recognitionTensor = torch::empty({1, 512});
                 }
                 
             }
@@ -162,17 +163,11 @@ int main(int argc, char **argv)
             std::cout << "---showChange - " << showChange << std::endl;
             std::cout << "---numFaces - " << faces.size() << std::endl;
 
-            if (showChange)
-            {
-                faces = readHDF5AndGetLabels(file, faces);
-                
-                // Show Result
-                auto resultImg = drawRectsAndPoints(frame, faces);
-                cv::imshow(windowTitle, resultImg);
-
-            } else {
-                cv::imshow(windowTitle, frame);
-            }
+            faces = readHDF5AndGetLabels(file, faces);
+            
+            // Show Result
+            auto resultImg = drawRectsAndPoints(frame, faces);
+            cv::imshow(windowTitle, resultImg);
 
             /////////////////////////////////////////////end face processing
         }
