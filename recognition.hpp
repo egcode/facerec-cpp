@@ -47,15 +47,23 @@ double distanceCosine(at::Tensor tensor1, at::Tensor tensor2)
 
 cv::Mat cropFaceImage(Face face, cv::Mat img) 
 {
-    cv::Rect rectSquare = face.bbox.getSquare().getRect(); // Make Square
-    // std::cout << "rect square: " << rectSquare << std::endl;
-    // std::cout << "x: " << rectSquare.x << std::endl;
-    // std::cout << "y: " << rectSquare.y << std::endl;
-    // std::cout << "width: " << rectSquare.width << std::endl;
-    // std::cout << "height: " << rectSquare.height << std::endl;
 
-    // auto rect = faces[i].bbox.getRect(); 
-    // std::cout << "rect: " << rect << std::endl;
+    std::cout << "Img Size: " << img.size() << std::endl;
+
+    std::cout << "Before x1: " << face.bbox.x1 << std::endl;
+    std::cout << "Before x2: " << face.bbox.x2 << std::endl;
+    std::cout << "Before y1: " << face.bbox.y1 << std::endl;
+    std::cout << "Before y2: " << face.bbox.y2 << std::endl;
+
+// cv::Rect rectSquare = face.bbox.getSquare().getRect(); // Make Square 
+    cv::Rect rectSquare = face.bbox.getRect();
+    std::cout << "rect square: " << rectSquare << std::endl;
+
+    std::cout << "After x1: " << rectSquare.x << std::endl;
+    std::cout << "After x2: " << rectSquare.x + rectSquare.width << std::endl;
+    std::cout << "After y1: " << rectSquare.y << std::endl;
+    std::cout << "After y2: " << rectSquare.y + rectSquare.width << std::endl;
+    std::cout << "\n\n" << rectSquare.height << std::endl;
 
   
     // Crop the full image to that image contained by the rectangle myROI
@@ -214,22 +222,32 @@ std::vector<Face> readHDF5AndGetLabels(H5::H5File *file, std::vector<Face> faces
             // auto embTensor = torch::zeros( {1, 512},torch::kF64);
             // std::memcpy(embTensor.data_ptr(),embedding,sizeof(double)*embTensor.numel());
 
+            at::Tensor emptyTensor = torch::empty({1, 512}, torch::TensorOptions().dtype(torch::kFloat32));
+
             for (size_t j = 0; j < faces.size(); ++j) 
             {
               // Distance
               // std::cout << "\n\nDistance Start------------------------------------------------: " << std::endl;
 
-              double dist = distanceCosine(faces[j].recognitionTensor, embTensor);
-              // std::cout << "-----Name : " << faces[j].label << " Distance : " << faces[j].dist << '\n'; // 1.0
-
-              if (faces[j].dist > dist)
+              // Check if tensor is not empty
+              if (torch::equal(emptyTensor, faces[j].recognitionTensor) == 0)
               {
-                faces[j].dist = dist;
-                faces[j].label = groupNames[i];
-                // std::cout << "Name : " << faces[j].label << " Distance : " << faces[j].dist << '\n'; // 1.0
+                double dist = distanceCosine(faces[j].recognitionTensor, embTensor);
+                // std::cout << "-----Name : " << faces[j].label << " Distance : " << faces[j].dist << '\n'; // 1.0
 
+                if (faces[j].dist > dist)
+                {
+                    faces[j].dist = dist;
+                    faces[j].label = groupNames[i];
+                    // std::cout << "Name : " << faces[j].label << " Distance : " << faces[j].dist << '\n'; // 1.0
+
+                }
+                // std::cout << "\n\nDistance End--------------------------------------------------: " << std::endl;
+
+              } else {
+                std::cout << "\n\n\tArray Empty Tensor, ignoring..." << std::endl;
               }
-              // std::cout << "\n\nDistance End--------------------------------------------------: " << std::endl;
+
             }
             
 

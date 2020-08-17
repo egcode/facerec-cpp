@@ -66,6 +66,11 @@ int main(int argc, char **argv)
     MTCNNDetector detector(pConfig, rConfig, oConfig);
 
 
+    unsigned captureWidth = 640;
+    unsigned captureHeight = 480; 
+    std::string windowTitle = "Recognition";
+
+
     /////////// --- Recognition Init start
     std::cout.precision(17);
 
@@ -91,8 +96,9 @@ int main(int argc, char **argv)
         cerr << "ERROR: Can't initialize camera capture" << endl;
         return 1;
     }
-    capture.set(CAP_PROP_FRAME_WIDTH,640);
-    capture.set(CAP_PROP_FRAME_HEIGHT,480);
+
+    capture.set(CAP_PROP_FRAME_WIDTH,captureWidth);
+    capture.set(CAP_PROP_FRAME_HEIGHT,captureHeight);
 
     cout << "Frame width: " << capture.get(CAP_PROP_FRAME_WIDTH) << endl;
     cout << "     height: " << capture.get(CAP_PROP_FRAME_HEIGHT) << endl;
@@ -138,20 +144,23 @@ int main(int argc, char **argv)
             std::cout << "Number of faces found in the supplied image - " << faces.size() << std::endl;
 
             // Face Recognition
-            std::vector <cv::Mat> faceImages;
             for (size_t i = 0; i < faces.size(); ++i) 
             {
+                // Additional check if face is constrainted with image edges
+                if ((faces[i].bbox.x1 > 0) && (faces[i].bbox.x2 < captureWidth) && (faces[i].bbox.y1 > 0) && (faces[i].bbox.y2 < captureHeight)) {
+                    cv::Mat faceImage = cropFaceImage(faces[i], frame);
+                    faces[i].recognitionTensor = torchFaceRecognitionInference(module, faceImage);
+                } else {
+                    std::cout << "Face Out of Bounds - " << std::endl;
+                }
                 
-                cv::Mat faceImage = cropFaceImage(faces[i], frame);
-                faceImages.push_back(faceImage);
-                faces[i].recognitionTensor = torchFaceRecognitionInference(module, faceImages[i]);
-
             }
-            faces = readHDF5AndGetLabels(file, faces);
 
+            faces = readHDF5AndGetLabels(file, faces);
+            
             // Show Result
             auto resultImg = drawRectsAndPoints(frame, faces);
-            cv::imshow("test-oc", resultImg);
+            cv::imshow(windowTitle, resultImg);
 
             /////////////////////////////////////////////end face processing
         }
