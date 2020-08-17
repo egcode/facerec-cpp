@@ -222,22 +222,40 @@ std::vector<Face> readHDF5AndGetLabels(H5::H5File *file, std::vector<Face> faces
             // auto embTensor = torch::zeros( {1, 512},torch::kF64);
             // std::memcpy(embTensor.data_ptr(),embedding,sizeof(double)*embTensor.numel());
 
+            at::Tensor emptyTensor = torch::empty({1, 512}, torch::TensorOptions().dtype(torch::kFloat32));
+
             for (size_t j = 0; j < faces.size(); ++j) 
             {
               // Distance
               // std::cout << "\n\nDistance Start------------------------------------------------: " << std::endl;
 
-              double dist = distanceCosine(faces[j].recognitionTensor, embTensor);
-              // std::cout << "-----Name : " << faces[j].label << " Distance : " << faces[j].dist << '\n'; // 1.0
+                std::cout << "\n\nCOMPARISON START------------------------------------------------: " << std::endl;
 
-              if (faces[j].dist > dist)
+                std::cout << "emptyTensor: " << emptyTensor << '\n';
+                std::cout << "faces[j].recognitionTensor: " << faces[j].recognitionTensor << '\n';
+
+                std::cout << "COMPARE: " << torch::equal(emptyTensor, faces[j].recognitionTensor) << '\n';
+                std::cout << "\n\nCOMPARISON END------------------------------------------------: " << std::endl;
+
+              // Check if tensor is not empty
+              if (torch::equal(emptyTensor, faces[j].recognitionTensor) == 0)
               {
-                faces[j].dist = dist;
-                faces[j].label = groupNames[i];
-                // std::cout << "Name : " << faces[j].label << " Distance : " << faces[j].dist << '\n'; // 1.0
+                double dist = distanceCosine(faces[j].recognitionTensor, embTensor);
+                // std::cout << "-----Name : " << faces[j].label << " Distance : " << faces[j].dist << '\n'; // 1.0
 
+                if (faces[j].dist > dist)
+                {
+                    faces[j].dist = dist;
+                    faces[j].label = groupNames[i];
+                    // std::cout << "Name : " << faces[j].label << " Distance : " << faces[j].dist << '\n'; // 1.0
+
+                }
+                // std::cout << "\n\nDistance End--------------------------------------------------: " << std::endl;
+
+              } else {
+                std::cout << "\n\n\tArray Empty Tensor, ignoring..." << std::endl;
               }
-              // std::cout << "\n\nDistance End--------------------------------------------------: " << std::endl;
+
             }
             
 
