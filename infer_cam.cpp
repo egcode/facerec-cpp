@@ -152,6 +152,7 @@ int main(int argc, char **argv)
                     faces[i].recognitionTensor = torchFaceRecognitionInference(module, faceImage);
                 } else {
                     std::cout << "Face Out of Bounds - " << std::endl;
+                    faces[i].recognitionTensor = emptyTensor();
                 }
                 
             }

@@ -45,6 +45,11 @@ double distanceCosine(at::Tensor tensor1, at::Tensor tensor2)
     return dist;
 }
 
+at::Tensor emptyTensor()
+{
+    return torch::empty({1, 512}, torch::TensorOptions().dtype(torch::kFloat32));
+}
+
 cv::Mat cropFaceImage(Face face, cv::Mat img) 
 {
 
@@ -222,7 +227,7 @@ std::vector<Face> readHDF5AndGetLabels(H5::H5File *file, std::vector<Face> faces
             // auto embTensor = torch::zeros( {1, 512},torch::kF64);
             // std::memcpy(embTensor.data_ptr(),embedding,sizeof(double)*embTensor.numel());
 
-            at::Tensor emptyTensor = torch::empty({1, 512}, torch::TensorOptions().dtype(torch::kFloat32));
+            at::Tensor empTensor = emptyTensor();
 
             for (size_t j = 0; j < faces.size(); ++j) 
             {
@@ -230,7 +235,7 @@ std::vector<Face> readHDF5AndGetLabels(H5::H5File *file, std::vector<Face> faces
               // std::cout << "\n\nDistance Start------------------------------------------------: " << std::endl;
 
               // Check if tensor is not empty
-              if (torch::equal(emptyTensor, faces[j].recognitionTensor) == 0)
+              if (torch::equal(empTensor, faces[j].recognitionTensor) == 0)
               {
                 double dist = distanceCosine(faces[j].recognitionTensor, embTensor);
                 // std::cout << "-----Name : " << faces[j].label << " Distance : " << faces[j].dist << '\n'; // 1.0

@@ -35,7 +35,7 @@ struct Face {
   float ptsCoords[2 * NUM_PTS];
 
   // Face Recognition
-  at::Tensor recognitionTensor = torch::empty({1, 512}, torch::TensorOptions().dtype(torch::kFloat32));
+  at::Tensor recognitionTensor;
   std::string label;
   double dist = 999999;
 
