@@ -146,15 +146,8 @@ int main(int argc, char **argv)
             // Face Recognition
             for (size_t i = 0; i < faces.size(); ++i) 
             {
-                // Additional check if face is constrainted with image edges
-                if ((faces[i].bbox.x1 > 0) && (faces[i].bbox.x2 < captureWidth) && (faces[i].bbox.y1 > 0) && (faces[i].bbox.y2 < captureHeight)) {
-                    cv::Mat faceImage = cropFaceImage(faces[i], frame);
-                    faces[i].recognitionTensor = torchFaceRecognitionInference(module, faceImage);
-                } else {
-                    std::cout << "Face Out of Bounds - " << std::endl;
-                    faces[i].recognitionTensor = emptyTensor();
-                }
-                
+                cv::Mat faceImage = cropFaceImage(faces[i], frame);
+                faces[i].recognitionTensor = torchFaceRecognitionInference(module, faceImage);
             }
 
             faces = readHDF5AndGetLabels(file, faces);
