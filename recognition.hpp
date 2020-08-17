@@ -229,14 +229,6 @@ std::vector<Face> readHDF5AndGetLabels(H5::H5File *file, std::vector<Face> faces
               // Distance
               // std::cout << "\n\nDistance Start------------------------------------------------: " << std::endl;
 
-                std::cout << "\n\nCOMPARISON START------------------------------------------------: " << std::endl;
-
-                std::cout << "emptyTensor: " << emptyTensor << '\n';
-                std::cout << "faces[j].recognitionTensor: " << faces[j].recognitionTensor << '\n';
-
-                std::cout << "COMPARE: " << torch::equal(emptyTensor, faces[j].recognitionTensor) << '\n';
-                std::cout << "\n\nCOMPARISON END------------------------------------------------: " << std::endl;
-
               // Check if tensor is not empty
               if (torch::equal(emptyTensor, faces[j].recognitionTensor) == 0)
               {
