@@ -10,6 +10,7 @@
 #include "mtcnn/detector.h"
 #include "draw.hpp"
 #include "recognition.hpp"
+#include "recognition_hdf5.hpp"
 
 #include <iostream>
 #include <string>
