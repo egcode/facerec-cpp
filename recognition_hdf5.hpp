@@ -10,7 +10,7 @@ extern "C" herr_t file_info(hid_t loc_id, const char *name, const H5L_info2_t *l
 
 std::vector<DatasetFace> readDatasetFacesFromHDF5(std::string databasePath) 
 {
-    
+
     std::vector<DatasetFace> datasetFaces;
 
    // Try block to detect exceptions raised by any of the calls inside it
@@ -73,18 +73,12 @@ std::vector<DatasetFace> readDatasetFacesFromHDF5(std::string databasePath)
             std::memcpy(embTensor.data_ptr(),embedding,sizeof(double)*embTensor.numel());
             std::cout << "\tTensor Output slice 0-5: " << embTensor.slice(/*dim=*/1, /*start=*/0, /*end=*/5) << std::endl;
 
-            DatasetFace df;
-            df = {
-                .name = groupNames[i],
-                .embeddingTensor = embTensor
-              };
 
-            // DatasetFace datasetFace;
-            // datasetFace.name = groupNames[i];
-            // datasetFace.embeddingTensor = embTensor;
+            // Adding to dataset;
+            DatasetFace df = DatasetFace(groupNames[i], embTensor);
 
-            std::cout << "+++NAME: " << df.name << "\n";
-            std::cout << "+++EMB: " << df.embeddingTensor.slice(/*dim=*/1, /*start=*/0, /*end=*/5) << "\n";
+            std::cout << "+++NAME: " << df.getName() << "\n";
+            std::cout << "+++EMB: " << df.getEmbeddingTensor().slice(/*dim=*/1, /*start=*/0, /*end=*/5) << "\n";
             std::cout << "+++OBJ ADDR: " << &df << std::endl;
 
             datasetFaces.push_back(df);
@@ -92,8 +86,8 @@ std::vector<DatasetFace> readDatasetFacesFromHDF5(std::string databasePath)
             std::cout << "\n-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n";
             for (unsigned long z=0; z<datasetFaces.size();z++ )
             {   
-                at::Tensor tsr = datasetFaces[z].embeddingTensor; 
-                std::cout << "NAME: " << datasetFaces[z].name << std::endl;
+                at::Tensor tsr = datasetFaces[z].getEmbeddingTensor(); 
+                std::cout << "NAME: " << datasetFaces[z].getName() << std::endl;
                 std::cout << "EMB: " << tsr.slice(/*dim=*/1, /*start=*/0, /*end=*/5) << '\n';
                 
                 std::cout << "OBJ ADDR: " << &(datasetFaces[z]) << std::endl;
