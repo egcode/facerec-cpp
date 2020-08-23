@@ -70,13 +70,8 @@ int main(int argc, char **argv) {
   torch::jit::script::Module module = torchInitModule(faceRecogintionModelPath);
 
   std::string databasePath = argv[4];
-  H5::H5File *file = readHDF5AndGroupNames(databasePath);
- 
-  if (!file) 
-  {
-    std::cout << "ERROR Getting HDF5 File" << std::endl;
-    return -1;
-  }
+  std::vector<DatasetFace> datasetFaces = readDatasetFacesFromHDF5(databasePath);
+
 //-----------------------------------------------------------------------------------
 //-----------------------------------------------------------------------------------
 //-----------------------------------------------------------------------------------
@@ -99,7 +94,7 @@ int main(int argc, char **argv) {
     cv::Mat faceImage = cropFaceImage(faces[i], img);
     faces[i].recognitionTensor = torchFaceRecognitionInference(module, faceImage);
   }
-  faces = readHDF5AndGetLabels(file, faces);
+  faces = readDatasetFacesAndGetLabels(datasetFaces, faces);
 
   // Show Result
   auto resultImg = drawRectsAndPoints(img, faces);
@@ -113,7 +108,6 @@ int main(int argc, char **argv) {
 //-----------------------------------------------------------------------------------
 //-----------------------------------------------------------------------------------
 
-  delete file;
   return 0;
 }
 

@@ -28,6 +28,11 @@ struct BBox {
   }
 };
 
+struct DatasetFace {
+    std::string name;
+    at::Tensor embeddingTensor;
+};
+
 struct Face {
   BBox bbox;
   float score;

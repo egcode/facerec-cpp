@@ -79,14 +79,15 @@ int main(int argc, char **argv)
     torch::jit::script::Module module = torchInitModule(faceRecogintionModelPath);
 
     std::string databasePath = argv[3];
-    H5::H5File *file = readHDF5AndGroupNames(databasePath);
-    
-    if (!file) 
-    {
-        std::cout << "ERROR Getting HDF5 File" << std::endl;
-        return -1;
-    }
-    /////////// --- Recognition Init end
+    std::vector<DatasetFace> datasetFaces = readDatasetFacesFromHDF5(databasePath);
+
+    cout << "\n\n\n ----------------------------------------------\n";
+    // for (unsigned long i=0; i<datasetFaces.size();i++ )
+    // {
+    //     cout << "------FACE: " << datasetFaces[i].name << endl;
+    //     std::cout << "Emb: " << datasetFaces[i].recognitionTensor.slice(/*dim=*/1, /*start=*/0, /*end=*/5) << '\n';
+    // }
+    ///////// --- Recognition Init end
 
 /////////////////////////////////////////////end init
     Mat frame;
@@ -151,8 +152,8 @@ int main(int argc, char **argv)
                 faces[i].recognitionTensor = torchFaceRecognitionInference(module, faceImage);
             }
 
-            faces = readHDF5AndGetLabels(file, faces);
-            
+            faces = readDatasetFacesAndGetLabels(datasetFaces, faces);
+
             // Show Result
             auto resultImg = drawRectsAndPoints(frame, faces);
             cv::imshow(windowTitle, resultImg);
@@ -177,6 +178,5 @@ int main(int argc, char **argv)
         }
     }
     std::cout << "Number of captured frames: " << nFrames << endl;
-    delete file;
     return nFrames > 0 ? 0 : 1;
 }

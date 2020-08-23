@@ -130,3 +130,41 @@ at::Tensor torchFaceRecognitionInference(torch::jit::script::Module module, cv::
     // std::cout << "Output size: " << output.sizes() << '\n';
   return output;
 }
+
+
+std::vector<Face> readDatasetFacesAndGetLabels(std::vector<DatasetFace> datasetFaces, std::vector<Face> faces)
+{
+    at::Tensor empTensor = emptyTensor();
+
+    for (unsigned long i=0; i<datasetFaces.size();i++ )
+    {
+
+        for (size_t j = 0; j < faces.size(); ++j) 
+        {
+            // Distance
+            // std::cout << "\n\nDistance Start------------------------------------------------: " << std::endl;
+
+            // Check if tensor is not empty
+            if (torch::equal(empTensor, faces[j].recognitionTensor) == 0)
+            {
+            double dist = distanceCosine(faces[j].recognitionTensor, datasetFaces[i].embeddingTensor);
+            // std::cout << "-----Name : " << faces[j].label << " Distance : " << faces[j].dist << '\n'; // 1.0
+
+            if (faces[j].dist > dist)
+            {
+                faces[j].dist = dist;
+                faces[j].label = datasetFaces[i].name;
+                // std::cout << "Name : " << faces[j].label << " Distance : " << faces[j].dist << '\n'; // 1.0
+
+            }
+            // std::cout << "\n\nDistance End--------------------------------------------------: " << std::endl;
+
+            } else {
+            std::cout << "\n\n\tArray Empty Tensor, ignoring..." << std::endl;
+            }
+
+        }
+
+    }
+    return faces;
+}
