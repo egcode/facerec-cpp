@@ -5,6 +5,7 @@
 #include <torch/script.h> // One-stop header.
 
 #include "mtcnn/detector.h"
+#include "dataset_face/DatasetFace.cpp"
 
 #include <string>
 #include <vector>

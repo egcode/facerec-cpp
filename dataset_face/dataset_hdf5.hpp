@@ -1,5 +1,9 @@
+#ifndef _include_dataset_face_hdf5_h_
+#define _include_dataset_face_hdf5_h_
+
 #include <torch/torch.h>
 #include <torch/script.h> // One-stop header.
+#include "DatasetFace.cpp"
 
 #include "H5Cpp.h"
 std::vector<std::string> groupNames;
@@ -155,3 +159,5 @@ file_info(hid_t loc_id, const char *name, const H5L_info2_t *linfo, void *opdata
     H5Gclose(group);
     return 0;
 }
+
+#endif

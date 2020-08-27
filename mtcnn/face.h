@@ -28,25 +28,6 @@ struct BBox {
   }
 };
 
-class DatasetFace {
-      std::string name;
-      at::Tensor embeddingTensor;
-    public:
-      DatasetFace(std::string n, at::Tensor et)
-      {
-        name = n;
-        embeddingTensor = et;
-      }
-      std::string getName() 
-      {
-        return name;
-      }
-      at::Tensor getEmbeddingTensor() 
-      {
-        return embeddingTensor;
-      }
-};
-
 struct Face {
   BBox bbox;
   float score;
