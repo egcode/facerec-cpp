@@ -7,8 +7,6 @@ set (CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package( OpenCV REQUIRED )
 find_package(Torch REQUIRED)
-find_package( Boost REQUIRED COMPONENTS system filesystem timer )
-include_directories( ${Boost_INCLUDE_DIRS} )
 
 find_package(HDF5 COMPONENTS C CXX HL REQUIRED)
 include_directories( ${HDF5_INCLUDE_DIR})
@@ -34,7 +32,7 @@ foreach( sourcefile ${APP_SOURCES} )
     # Simple string replace, to cut off .cpp.
     string( REPLACE ".cpp" "" name ${sourcefile} )
     add_executable( ${name} ${sourcefile} ${SOURCES} )
-    target_link_libraries (${name} LINK_PUBLIC ${OpenCV_LIBS} ${TORCH_LIBRARIES} ${Boost_LIBRARIES} ${HDF5_LIBRARIES} ${HDF5_CXX_LIBRARIES})
+    target_link_libraries (${name} LINK_PUBLIC ${OpenCV_LIBS} ${TORCH_LIBRARIES} ${HDF5_LIBRARIES} ${HDF5_CXX_LIBRARIES})
     #set_property(TARGET ${name} PROPERTY CXX_STANDARD 14)
 endforeach( sourcefile ${APP_SOURCES} )
 
