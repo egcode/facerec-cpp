@@ -75,9 +75,17 @@ int main(int argc, char **argv) {
   torch::jit::script::Module module = torchInitModule(faceRecogintionModelPath);
 
   std::string databasePath = argv[4];
-  // std::vector<DatasetFace> datasetFaces = readDatasetFacesFromHDF5(databasePath);
-  std::vector<DatasetFace> datasetFaces = readDatasetFacesFromProtobuf(databasePath);
-
+  std::vector<DatasetFace> datasetFaces;
+  if(databasePath.substr(databasePath.find_last_of(".") + 1) == "h5") {
+      cout << "Dataset Type is HDF5"  << endl;
+      datasetFaces = readDatasetFacesFromHDF5(databasePath);
+  } else if(databasePath.substr(databasePath.find_last_of(".") + 1) == "protobuf") {
+      cout << "Dataset Type is PROTOBUF"  << endl;
+      datasetFaces = readDatasetFacesFromProtobuf(databasePath);
+  } else {
+      cerr << "ERROR: Can't get database file type" << endl;
+      return -1;
+  }
 //-----------------------------------------------------------------------------------
 //-----------------------------------------------------------------------------------
 //-----------------------------------------------------------------------------------
