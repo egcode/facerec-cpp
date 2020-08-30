@@ -124,6 +124,10 @@ at::Tensor torchFaceRecognitionInference(torch::jit::script::Module module, cv::
   std::vector<torch::jit::IValue> inputs;
   inputs.push_back(input_tensor);
 
+  // Disable back propagation
+  torch::autograd::AutoGradMode guard(false);
+  at::AutoNonVariableTypeMode non_var_type_mode(true);
+
   // --- Model Inference
   // Execute the model and turn its output into a tensor.
   at::Tensor output = module.forward(inputs).toTensor();
