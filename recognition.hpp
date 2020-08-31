@@ -1,3 +1,6 @@
+#ifndef recognition_hpp
+#define recognition_hpp
+
 #include <opencv2/dnn.hpp>
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
@@ -24,10 +27,12 @@ double distanceCosine(at::Tensor tensor1, at::Tensor tensor2)
     at::Tensor mult = tensor1 * tensor2;
     at::Tensor uv = mult.mean();
 
-    at::Tensor arr1TensorSquare = tensor1.square();
+    // at::Tensor arr1TensorSquare = tensor1.square();// .square() doesn't exist on mobile
+    at::Tensor arr1TensorSquare = tensor1 * tensor1;
     at::Tensor uu = arr1TensorSquare.mean();
 
-    at::Tensor arr2TensorSquare = tensor2.square();
+    // at::Tensor arr2TensorSquare = tensor2.square();// .square() doesn't exist on mobile
+    at::Tensor arr2TensorSquare = tensor2 * tensor2;
     at::Tensor vv = arr2TensorSquare.mean();
 
     at::Tensor uuMultVv = uu * vv;
@@ -141,28 +146,34 @@ std::vector<Face> readDatasetFacesAndGetLabels(std::vector<DatasetFace> datasetF
 {
     at::Tensor empTensor = emptyTensor();
 
-    for (unsigned long i=0; i<datasetFaces.size();i++ )
+    for (unsigned int i=0; i<datasetFaces.size();i++ )
     {
 
-        for (size_t j = 0; j < faces.size(); ++j) 
+        for (unsigned int j=0; j<faces.size();j++ )
+ 
         {
             // Distance
-            // std::cout << "\n\nDistance Start------------------------------------------------: " << std::endl;
+            std::cout << "\n\nDistance Start------------------------------------------------: " << std::endl;
 
             // Check if tensor is not empty
             if (torch::equal(empTensor, faces[j].recognitionTensor) == 0)
             {
             double dist = distanceCosine(faces[j].recognitionTensor, datasetFaces[i].getEmbeddingTensor());
-            // std::cout << "-----Name : " << faces[j].label << " Distance : " << faces[j].dist << '\n'; // 1.0
+            std::cout << "-----Comparing with : " << datasetFaces[i].getName() << "  Old name: " << faces[j].label << "   Old Distance: " << faces[j].dist << "\tNew Distance: " << dist << "\n"; // 1.0
+            std::cout << "i:" << i << "   j:" << j << "\n";
 
             if (faces[j].dist > dist)
             {
+
+                std::cout << "++++ REASSIGN To: " << datasetFaces[i].getName() << "\n";
+                std::cout << "Old Distance: " << faces[j].dist << "\tNew Distance: " << dist << "\n";
+
                 faces[j].dist = dist;
                 faces[j].label = datasetFaces[i].getName();
                 // std::cout << "Name : " << faces[j].label << " Distance : " << faces[j].dist << '\n'; // 1.0
 
             }
-            // std::cout << "\n\nDistance End--------------------------------------------------: " << std::endl;
+            std::cout << "\n\nDistance End--------------------------------------------------: " << std::endl;
 
             } else {
             std::cout << "\n\n\tArray Empty Tensor, ignoring..." << std::endl;
@@ -173,3 +184,5 @@ std::vector<Face> readDatasetFacesAndGetLabels(std::vector<DatasetFace> datasetF
     }
     return faces;
 }
+
+#endif
