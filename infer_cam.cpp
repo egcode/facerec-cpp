@@ -10,6 +10,8 @@
 #include "mtcnn/detector.h"
 #include "draw.hpp"
 #include "recognition.hpp"
+#include "dataset_face/dataset_hdf5.hpp"
+#include "dataset_face/dataset_proto.hpp"
 
 #include <iostream>
 #include <string>
@@ -21,10 +23,12 @@ echo "" | g++ -xc - -v -E
 
 rm -rf build;mkdir build;cd build;cmake -DCMAKE_C_COMPILER=clang \
 -DCMAKE_CXX_COMPILER=clang++ \
--DCMAKE_PREFIX_PATH="$PWD/libtorch;/usr/local/Cellar/hdf5/1.12.0" ..;make VERBOSE=1;cd ..
+-DCMAKE_PREFIX_PATH="$PWD/libtorch;/usr/local/Cellar/hdf5/1.12.0;/usr/local/Cellar/protobuf/3.12.4" ..;make VERBOSE=1;cd ..
 
 
 ./build/infer_cam ./models ./data/IR_50_MODEL_arcface_ms1celeb_epoch90_lfw9962_traced_model.pt ./data/dataset_golovan.h5
+./build/infer_cam ./models ./data/IR_50_MODEL_arcface_ms1celeb_epoch90_lfw9962_traced_model.pt ./data/dataset_golovan.protobuf
+
 
 */
 using namespace cv;
@@ -78,14 +82,19 @@ int main(int argc, char **argv)
     torch::jit::script::Module module = torchInitModule(faceRecogintionModelPath);
 
     std::string databasePath = argv[3];
-    H5::H5File *file = readHDF5AndGroupNames(databasePath);
-    
-    if (!file) 
-    {
-        std::cout << "ERROR Getting HDF5 File" << std::endl;
+    std::vector<DatasetFace> datasetFaces;
+    if(databasePath.substr(databasePath.find_last_of(".") + 1) == "h5") {
+        cout << "Dataset Type is HDF5"  << endl;
+        datasetFaces = readDatasetFacesFromHDF5(databasePath);
+    } else if(databasePath.substr(databasePath.find_last_of(".") + 1) == "protobuf") {
+        cout << "Dataset Type is PROTOBUF"  << endl;
+        datasetFaces = readDatasetFacesFromProtobuf(databasePath);
+    } else {
+        cerr << "ERROR: Can't get database file type" << endl;
         return -1;
     }
-    /////////// --- Recognition Init end
+
+    cout << "\n\n\n ----------------------------------------------\n";
 
 /////////////////////////////////////////////end init
     Mat frame;
@@ -150,8 +159,8 @@ int main(int argc, char **argv)
                 faces[i].recognitionTensor = torchFaceRecognitionInference(module, faceImage);
             }
 
-            faces = readHDF5AndGetLabels(file, faces);
-            
+            faces = readDatasetFacesAndGetLabels(datasetFaces, faces);
+
             // Show Result
             auto resultImg = drawRectsAndPoints(frame, faces);
             cv::imshow(windowTitle, resultImg);
@@ -176,6 +185,5 @@ int main(int argc, char **argv)
         }
     }
     std::cout << "Number of captured frames: " << nFrames << endl;
-    delete file;
     return nFrames > 0 ? 0 : 1;
 }
