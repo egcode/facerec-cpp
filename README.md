@@ -40,4 +40,5 @@ cd facerec-cpp
 
 * OpenCV 4.1+
 * HDF5 1.12.0
+* Protobuf 3.12.4
 * CMake 3.2+
